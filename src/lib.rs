@@ -118,7 +118,7 @@ impl Client {
             .await
     }
 
-    /// If there are no members, returns [`Error::Server`] with
+    /// If there are no supporters, returns [`Error::Server`] with
     /// [`ServerError::reason`] being "No supporters".
     pub async fn supporters(&self, page: u16) -> Result<Page<Support>> {
         self.get("/v1/supporters", |request| request.query(&[("page", page)]))
@@ -127,6 +127,18 @@ impl Client {
 
     pub async fn support(&self, id: u32) -> Result<Support> {
         self.get(&format!("/v1/supporters/{id}"), |request| request)
+            .await
+    }
+
+    /// If there are no extras, returns [`Error::Server`] with
+    /// [`ServerError::reason`] being "No extra purchases".
+    pub async fn extras(&self, page: u16) -> Result<Page<Purchase>> {
+        self.get("/v1/extras", |request| request.query(&[("page", page)]))
+            .await
+    }
+
+    pub async fn extra(&self, id: u32) -> Result<Purchase> {
+        self.get(&format!("/v1/extras/{id}"), |request| request)
             .await
     }
 }
@@ -218,4 +230,57 @@ pub struct Support {
     pub payer_email: String,
     pub payment_platform: String,
     pub payer_name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Purchase {
+    #[serde(rename = "purchase_id")]
+    pub id: u32,
+    #[serde(rename = "purchased_on")]
+    pub created_on: String,
+    #[serde(rename = "purchase_updated_on")]
+    pub updated_on: String,
+    #[serde(rename = "purchase_is_revoked")]
+    pub is_revoked: bool,
+    #[serde(rename = "purchase_amount")]
+    pub amount: String,
+    #[serde(rename = "purchase_currency")]
+    pub currency: String,
+    #[serde(rename = "purchase_question")]
+    pub question: String,
+    pub payer_email: String,
+    pub payer_name: String,
+    pub extra: Extra,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Extra {
+    #[serde(rename = "reward_id")]
+    pub id: u32,
+    #[serde(rename = "reward_title")]
+    pub title: String,
+    #[serde(rename = "reward_description")]
+    pub description: String,
+    #[serde(rename = "reward_confirmation_message")]
+    pub confirmation_message: String,
+    #[serde(rename = "reward_question")]
+    pub question: String,
+    #[serde(rename = "reward_used")]
+    pub used: u8,
+    #[serde(rename = "reward_created_on")]
+    pub created_on: String,
+    #[serde(rename = "reward_updated_on")]
+    pub updated_on: String,
+    #[serde(rename = "reward_deleted_on")]
+    pub deleted_on: Option<String>,
+    #[serde(rename = "reward_is_active")]
+    pub is_active: bool,
+    #[serde(rename = "reward_image")]
+    pub image: String,
+    #[serde(rename = "reward_slots")]
+    pub slots: u8,
+    #[serde(rename = "reward_coffee_price")]
+    pub coffee_price: String,
+    #[serde(rename = "reward_order")]
+    pub order: u8,
 }

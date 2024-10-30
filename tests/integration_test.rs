@@ -40,3 +40,11 @@ async fn no_supporters_error() {
 
     client.supporters(1).await.unwrap();
 }
+
+#[tokio::test]
+#[should_panic = "No extra purchases"]
+async fn no_extras_error() {
+    let client = buy_me_a_coffee::Client::new(&test_pat());
+
+    client.extras(1).await.unwrap();
+}
