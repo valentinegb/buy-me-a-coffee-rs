@@ -18,10 +18,27 @@ pub enum Error {
 }
 
 #[derive(Debug, Error, Deserialize)]
-#[error("{error_code} {reason}")]
+#[error("{}{reason}", if let Some(error_code) = .error_code { format!("{error_code} ") } else { "".to_string() })]
 pub struct ServerError {
-    pub error_code: u16,
+    pub error_code: Option<u16>,
+    #[serde(alias = "error")]
     pub reason: String,
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum UntaggedResult<T> {
+    Err(ServerError),
+    Ok(T),
+}
+
+impl<T> Into<Result<T>> for UntaggedResult<T> {
+    fn into(self) -> Result<T> {
+        match self {
+            UntaggedResult::Err(err) => Err(Error::Server(err)),
+            UntaggedResult::Ok(t) => Ok(t),
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -55,19 +72,24 @@ impl Client {
         let status = response.status();
 
         if status.is_client_error() {
-            Err(Error::Client(status))
-        } else if status.is_server_error() {
-            Err(Error::Server(response.json().await?))
-        } else {
-            Ok(response.json().await?)
+            return Err(Error::Client(status));
         }
+
+        response.json::<UntaggedResult<T>>().await?.into()
     }
 
-    pub async fn members(&self, status: MemberStatus) -> Result<Members> {
+    pub async fn members(&self, status: MemberStatus, page: u16) -> Result<Members> {
         self.get("/v1/subscriptions", |request| {
-            request.query(&[("status", status)])
+            request
+                .query(&[("status", status)])
+                .query(&[("page", page)])
         })
         .await
+    }
+
+    pub async fn membership(&self, id: u32) -> Result<Membership> {
+        self.get(&format!("/v1/subscriptions/{id}"), |request| request)
+            .await
     }
 }
 
@@ -80,4 +102,18 @@ pub enum MemberStatus {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Members {}
+pub struct Members {
+    pub current_page: u16,
+    pub data: Vec<Membership>,
+    pub from: u16,
+    pub last_page: u16,
+    pub per_page: u16,
+    pub to: u16,
+    pub total: u16,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Membership {
+    #[serde(rename = "subscription_id")]
+    pub id: u32,
+}
