@@ -1,3 +1,5 @@
+//! To begin making requests to the API, first make a new [`Client`].
+
 use reqwest::{
     header::{CONTENT_TYPE, USER_AGENT},
     RequestBuilder, StatusCode,
@@ -165,7 +167,7 @@ pub struct Membership {
     #[serde(rename = "subscription_coffee_price")]
     pub coffee_price: String,
     #[serde(rename = "subscription_coffee_num")]
-    pub coffees: u16,
+    pub coffee_num: u16,
     #[serde(rename = "subscription_is_cancelled", default)]
     pub is_cancelled: bool,
     #[serde(rename = "subscription_is_cancelled_at_period_end", default)]
@@ -191,7 +193,7 @@ pub struct Support {
     #[serde(rename = "support_note")]
     pub note: Option<String>,
     #[serde(rename = "support_coffees")]
-    pub coffees: u16,
+    pub coffee_num: u16,
     pub transaction_id: String,
     #[serde(rename = "support_visibility")]
     pub visibility: u8,
