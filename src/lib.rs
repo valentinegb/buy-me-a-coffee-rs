@@ -116,4 +116,34 @@ pub struct Members {
 pub struct Membership {
     #[serde(rename = "subscription_id")]
     pub id: u32,
+    #[serde(rename = "subscription_cancelled_on")]
+    pub cancelled_on: Option<String>,
+    #[serde(rename = "subscription_created_on")]
+    pub created_on: String,
+    #[serde(rename = "subscription_updated_on")]
+    pub updated_on: String,
+    #[serde(rename = "subscription_current_period_start")]
+    pub current_period_start: String,
+    #[serde(rename = "subscription_current_period_end")]
+    pub current_period_end: String,
+    #[serde(rename = "subscription_coffee_price")]
+    pub coffee_price: String,
+    #[serde(rename = "subscription_coffee_num")]
+    pub coffee_num: u16,
+    #[serde(rename = "subscription_is_cancelled", default)]
+    pub is_cancelled: bool,
+    #[serde(rename = "subscription_is_cancelled_at_period_end", default)]
+    pub is_cancelled_at_period_end: bool,
+    #[serde(rename = "subscription_currency")]
+    pub currency: String,
+    #[serde(rename = "subscription_message")]
+    pub message: Option<String>,
+    pub message_visibility: u8,
+    #[serde(rename = "subscription_duration_type")]
+    pub duration_type: String,
+    pub referer: Option<String>,
+    pub country: Option<String>,
+    pub transaction_id: String,
+    pub payer_email: String,
+    pub payer_name: String,
 }
