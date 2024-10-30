@@ -31,8 +31,13 @@ async fn not_found_error() {
 async fn no_subscriptions_error() {
     let client = buy_me_a_coffee::Client::new(&test_pat());
 
-    assert_eq!(
-        client.members(MemberStatus::All, 1).await.unwrap().per_page,
-        5,
-    );
+    client.members(MemberStatus::All, 1).await.unwrap();
+}
+
+#[tokio::test]
+#[should_panic = "No supporters"]
+async fn no_supporters_error() {
+    let client = buy_me_a_coffee::Client::new(&test_pat());
+
+    client.supporters(1).await.unwrap();
 }

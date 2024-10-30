@@ -78,7 +78,7 @@ impl Client {
         response.json::<UntaggedResult<T>>().await?.into()
     }
 
-    pub async fn members(&self, status: MemberStatus, page: u16) -> Result<Members> {
+    pub async fn members(&self, status: MemberStatus, page: u16) -> Result<Page<Membership>> {
         self.get("/v1/subscriptions", |request| {
             request
                 .query(&[("status", status)])
@@ -89,6 +89,16 @@ impl Client {
 
     pub async fn membership(&self, id: u32) -> Result<Membership> {
         self.get(&format!("/v1/subscriptions/{id}"), |request| request)
+            .await
+    }
+
+    pub async fn supporters(&self, page: u16) -> Result<Page<Support>> {
+        self.get("/v1/supporters", |request| request.query(&[("page", page)]))
+            .await
+    }
+
+    pub async fn support(&self, id: u32) -> Result<Support> {
+        self.get(&format!("/v1/supporters/{id}"), |request| request)
             .await
     }
 }
@@ -102,9 +112,9 @@ pub enum MemberStatus {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Members {
+pub struct Page<T> {
     pub current_page: u16,
-    pub data: Vec<Membership>,
+    pub data: Vec<T>,
     pub from: u16,
     pub last_page: u16,
     pub per_page: u16,
@@ -129,7 +139,7 @@ pub struct Membership {
     #[serde(rename = "subscription_coffee_price")]
     pub coffee_price: String,
     #[serde(rename = "subscription_coffee_num")]
-    pub coffee_num: u16,
+    pub coffees: u16,
     #[serde(rename = "subscription_is_cancelled", default)]
     pub is_cancelled: bool,
     #[serde(rename = "subscription_is_cancelled_at_period_end", default)]
@@ -145,5 +155,39 @@ pub struct Membership {
     pub country: Option<String>,
     pub transaction_id: String,
     pub payer_email: String,
+    pub payer_name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Support {
+    #[serde(rename = "support_id")]
+    pub id: u32,
+    #[serde(rename = "support_note")]
+    pub note: Option<String>,
+    #[serde(rename = "support_coffees")]
+    pub coffees: u16,
+    pub transaction_id: String,
+    #[serde(rename = "support_visibility")]
+    pub visibility: u8,
+    #[serde(rename = "support_created_on")]
+    pub created_on: String,
+    #[serde(rename = "support_updated_on")]
+    pub updated_on: String,
+    pub transfer_id: Option<String>,
+    pub supporter_name: Option<String>,
+    #[serde(rename = "support_coffee_price")]
+    pub coffee_price: String,
+    #[serde(rename = "support_email")]
+    pub email: String,
+    #[serde(default)]
+    pub is_refunded: bool,
+    #[serde(rename = "support_currency")]
+    pub currency: String,
+    #[serde(rename = "support_note_pinned")]
+    pub note_pinned: u8,
+    pub referer: Option<String>,
+    pub country: Option<String>,
+    pub payer_email: String,
+    pub payment_platform: String,
     pub payer_name: String,
 }
