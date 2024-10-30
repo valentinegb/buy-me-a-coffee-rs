@@ -100,6 +100,8 @@ impl Client {
         response.json::<UntaggedResult<T>>().await?.into()
     }
 
+    /// If there are no members, returns [`Error::Server`] with
+    /// [`ServerError::reason`] being "No subscriptions".
     pub async fn members(&self, status: MemberStatus, page: u16) -> Result<Page<Membership>> {
         self.get("/v1/subscriptions", |request| {
             request
@@ -114,6 +116,8 @@ impl Client {
             .await
     }
 
+    /// If there are no members, returns [`Error::Server`] with
+    /// [`ServerError::reason`] being "No supporters".
     pub async fn supporters(&self, page: u16) -> Result<Page<Support>> {
         self.get("/v1/supporters", |request| request.query(&[("page", page)]))
             .await
