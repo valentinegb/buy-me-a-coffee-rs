@@ -102,6 +102,8 @@ impl Client {
         response.json::<UntaggedResult<T>>().await?.into()
     }
 
+    /// Returns all members.
+    ///
     /// If there are no members, returns [`Error::Server`] with
     /// [`ServerError::reason`] being "No subscriptions".
     pub async fn members(&self, status: MemberStatus, page: u16) -> Result<Page<Membership>> {
@@ -113,11 +115,14 @@ impl Client {
         .await
     }
 
+    /// Returns membership details for the ID provided.
     pub async fn membership(&self, id: u32) -> Result<Membership> {
         self.get(&format!("/v1/subscriptions/{id}"), |request| request)
             .await
     }
 
+    /// Returns all onetime-supporters.
+    ///
     /// If there are no supporters, returns [`Error::Server`] with
     /// [`ServerError::reason`] being "No supporters".
     pub async fn supporters(&self, page: u16) -> Result<Page<Support>> {
@@ -125,18 +130,24 @@ impl Client {
             .await
     }
 
+    /// Returns details on support with the ID provided.
     pub async fn support(&self, id: u32) -> Result<Support> {
         self.get(&format!("/v1/supporters/{id}"), |request| request)
             .await
     }
 
-    /// If there are no extras, returns [`Error::Server`] with
+    /// Returns all extra purchases.
+    ///
+    /// If there are no extra purchases, returns [`Error::Server`] with
     /// [`ServerError::reason`] being "No extra purchases".
     pub async fn extras(&self, page: u16) -> Result<Page<Purchase>> {
         self.get("/v1/extras", |request| request.query(&[("page", page)]))
             .await
     }
 
+    /// Returns details on an extra purchase with the ID provided.
+    ///
+    /// Note that `id` is [`Purchase::id`], not [`Extra::id`].
     pub async fn extra(&self, id: u32) -> Result<Purchase> {
         self.get(&format!("/v1/extras/{id}"), |request| request)
             .await
