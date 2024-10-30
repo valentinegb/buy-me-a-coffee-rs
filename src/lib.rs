@@ -1,4 +1,7 @@
-use reqwest::{header::USER_AGENT, RequestBuilder, StatusCode};
+use reqwest::{
+    header::{CONTENT_TYPE, USER_AGENT},
+    RequestBuilder, StatusCode,
+};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use thiserror::Error;
 
@@ -69,6 +72,25 @@ impl Client {
         request = modify_request(request);
 
         let response = request.send().await?;
+
+        // For some reason, when unauthorized, the API will redirect to the
+        // login page, despite the agent not being a browser. This is annoying,
+        // but consistent enough that we can anticipate it and turn it into an
+        // error that makes sense.
+        if response
+            .headers()
+            .get(CONTENT_TYPE)
+            .and_then(|content_type| {
+                content_type
+                    .to_str()
+                    .map(|content_type_str| content_type_str.contains("html"))
+                    .ok()
+            })
+            .unwrap_or_default()
+        {
+            return Err(Error::Client(StatusCode::UNAUTHORIZED));
+        }
+
         let status = response.status();
 
         if status.is_client_error() {

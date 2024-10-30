@@ -11,7 +11,6 @@ fn test_pat() -> String {
 
 #[tokio::test]
 #[should_panic = "Client(401)"]
-#[ignore = "unexpected behaviour from server"]
 async fn unauthorized_error() {
     let client = buy_me_a_coffee::Client::new("invalid access token");
 
