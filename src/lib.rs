@@ -1,4 +1,18 @@
 //! To begin making requests to the API, first make a new [`Client`].
+//!
+//! ```no_run
+//! use buy_me_a_coffee::MemberStatus;
+//!
+//! # #[tokio::main]
+//! # async fn main() {
+//! let client = buy_me_a_coffee::Client::new("personal access token here");
+//!
+//! for membership in client.members(MemberStatus::All, 1).await.unwrap().data {
+//!     //                                              ^ first page
+//!     println!("{}", membership.payer_name);
+//! }
+//! # }
+//! ```
 
 use reqwest::{
     header::{CONTENT_TYPE, USER_AGENT},
@@ -172,6 +186,9 @@ pub struct Page<T> {
     pub to: u16,
     pub total: u16,
 }
+
+// TODO: Implement [`AsyncIterator`] to iterate over pages when it has matured
+//       enough
 
 #[derive(Debug, Deserialize)]
 pub struct Membership {
