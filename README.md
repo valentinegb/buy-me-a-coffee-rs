@@ -1,5 +1,9 @@
 # `buy_me_a_coffee`
 
+![Crates.io Version](https://img.shields.io/crates/v/buy_me_a_coffee?link=https%3A%2F%2Fcrates.io%2Fcrates%2Fbuy_me_a_coffee)
+![docs.rs](https://img.shields.io/docsrs/buy_me_a_coffee?link=https%3A%2F%2Fdocs.rs%2Fbuy_me_a_coffee)
+[![Rust](https://github.com/valentinegb/buy-me-a-coffee-rs/actions/workflows/rust.yml/badge.svg)](https://github.com/valentinegb/buy-me-a-coffee-rs/actions/workflows/rust.yml)
+
 A Rust crate for interacting with the [Buy Me a Coffee] API.
 
 ```rs
