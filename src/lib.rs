@@ -78,7 +78,7 @@ impl Debug for Client {
 }
 
 impl Client {
-    pub fn new(token: &str) -> Self {
+    pub fn new(token: impl ToString) -> Self {
         Self {
             client: reqwest::Client::new(),
             token: token.to_string(),
