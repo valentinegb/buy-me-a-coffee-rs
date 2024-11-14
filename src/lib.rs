@@ -14,6 +14,8 @@
 //! # }
 //! ```
 
+use std::fmt::{self, Debug, Formatter};
+
 use reqwest::{
     header::{CONTENT_TYPE, USER_AGENT},
     RequestBuilder, StatusCode,
@@ -64,6 +66,15 @@ impl<T> Into<Result<T>> for UntaggedResult<T> {
 pub struct Client {
     client: reqwest::Client,
     token: String,
+}
+
+impl Debug for Client {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Client")
+            .field("client", &self.client)
+            .field("token", &String::from_iter(vec!['*'; self.token.len()]))
+            .finish()
+    }
 }
 
 impl Client {
