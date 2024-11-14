@@ -1,6 +1,6 @@
 [package]
 name = "buy_me_a_coffee"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Valentine Briese <valentinegb@icloud.com>"]
 edition = "2021"
 description = "A Rust crate for interacting with the Buy Me a Coffee API"
