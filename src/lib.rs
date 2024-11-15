@@ -6,7 +6,7 @@
 //! ```no_run
 //! use buy_me_a_coffee::MemberStatus;
 //!
-//! # const EARLY_ACCESS_ID: &str = ""
+//! # const EARLY_ACCESS_ID: u32 = 0;
 //! #
 //! async fn has_early_access(email: String) -> bool {
 //!     let client = buy_me_a_coffee::Client::new("personal access token here");
