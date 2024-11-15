@@ -6,14 +6,33 @@
 
 A Rust crate for interacting with the [Buy Me a Coffee] API.
 
-```rs
+Here's an example of how you could use this crate to check if somebody has a
+membership level called "Early Access":
+
+```rust
 use buy_me_a_coffee::MemberStatus;
 
-let client = buy_me_a_coffee::Client::new("personal access token here");
+async fn has_early_access(email: String) -> bool {
+    let client = buy_me_a_coffee::Client::new("personal access token here");
+    let mut page_num = 1;
 
-for membership in client.members(MemberStatus::All, 1).await.unwrap().data {
-    //                                              ^ first page
-    println!("{}", membership.payer_name);
+    while let Ok(page) = client.members(MemberStatus::Active, page_num).await {
+        for membership in page.data {
+            if membership.payer_email != email {
+                continue;
+            }
+
+            if membership.id != EARLY_ACCESS_ID {
+                continue;
+            }
+
+            return true;
+        }
+
+        page_num += 1;
+    }
+
+    false
 }
 ```
 
